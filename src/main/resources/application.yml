@@ -1,0 +1,64 @@
+spring:
+  datasource:
+    driver-class-name: org.mariadb.jdbc.Driver
+    url: jdbc:mariadb://${DB_HOST}:${DB_PORT}/${BILLUS_DB_NAME}
+    username: ${DB_USER}
+    password: ${DB_PASS}
+
+  mail:
+    host: ${BILLUS_MAIL_HOST}
+    port: ${BILLUS_MAIL_PORT}
+    username: ${BILLUS_MAIL_USER}
+    password: ${BILLUS_MAIL_KEY} #이메일 key
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+
+  jpa:
+    hibernate:
+      ddl-auto: ${DDL_TYPE}
+    show-sql: true
+    properties:
+      format_sql: true
+      hibernate:
+        jdbc:
+          time_zone: Asia/Seoul
+
+  data:
+    redis:
+      host: ${REDIS_HOST}
+      port: ${REDIS_PORT}
+
+jwt:
+  secret-key: ${BILLUS_JWT_KEY}
+  public-key: ${JWT_PUBLIC_KEY}
+  access-exp: ${JWT_ACCESS_EXP} # 10 mins
+  refresh-exp: ${JWT_REFRESH_EXP} # 180 days
+aes:
+  secret-key: ${AES_KEY}
+server:
+  port: ${BILLUS_SERVER_PORT}
+  servlet:
+    encoding:
+      charset: utf-8
+      enabled: true
+      force: true
+
+aws:
+  secrets-manager:
+    firebase-secret: ${BILLUS_FCM_KEY}
+  region: ${AWS_REGION}
+  credentials:
+    access-key: ${AWS_ACCESS_KEY}    
+    secret-key: ${AWS_SECRET_KEY}  
+  s3:
+    bucket-name: bbb
+    folder: aaa
+    access-key: 12345
+    secret-key: 12345
+    region: ${AWS_REGION}
+
+data-org-api-key: ${DATA_ORG_API_KEY}

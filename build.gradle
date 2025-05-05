@@ -1,0 +1,105 @@
+plugins {
+	id 'java'
+	id 'org.springframework.boot' version '3.1.2'
+	id 'io.spring.dependency-management' version '1.1.2'
+}
+
+group = 'com.klolarion'
+version = '0.0.1-SNAPSHOT'
+
+java {
+	sourceCompatibility = '17'
+}
+
+configurations {
+	compileOnly {
+		extendsFrom annotationProcessor
+	}
+}
+
+repositories {
+	mavenCentral()
+}
+
+dependencies {
+	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+	implementation 'org.springframework.boot:spring-boot-starter-jdbc'
+	implementation 'org.springframework.boot:spring-boot-starter-security'
+	implementation 'org.springframework.boot:spring-boot-starter-web'
+	implementation 'org.springframework.boot:spring-boot-starter-validation'
+	implementation 'org.springframework.boot:spring-boot-starter-mail'
+//	implementation 'de.codecentric:spring-boot-admin-starter-server:3.1.0'
+
+	compileOnly 'org.projectlombok:lombok'
+	runtimeOnly 'com.h2database:h2'
+	runtimeOnly 'org.mariadb.jdbc:mariadb-java-client'
+	annotationProcessor 'org.projectlombok:lombok'
+
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	testImplementation 'org.springframework.security:spring-security-test'
+
+	// Swagger 3.0.0
+	implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.0.2'
+
+
+	//poi
+	implementation 'org.apache.poi:poi:5.2.2'
+	implementation 'org.apache.poi:poi-ooxml:5.2.2'
+
+	//firebase
+	implementation 'com.google.firebase:firebase-admin:9.2.0'
+
+
+	//redis
+	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+
+	// ⭐ Spring boot 3.x이상에서 QueryDsl 패키지를 정의하는 방법
+	implementation 'com.querydsl:querydsl-jpa:5.0.0:jakarta'
+	implementation 'org.projectlombok:lombok:1.18.26'
+	testImplementation project(path: ':')
+	annotationProcessor "com.querydsl:querydsl-apt:5.0.0:jakarta"
+	annotationProcessor "jakarta.annotation:jakarta.annotation-api"
+	annotationProcessor "jakarta.persistence:jakarta.persistence-api"
+
+	//jwt토큰 구현을 위한 dependency
+	implementation 'io.jsonwebtoken:jjwt-api:0.11.5'
+	implementation 'io.jsonwebtoken:jjwt-impl:0.11.5'
+	implementation 'io.jsonwebtoken:jjwt-jackson:0.11.5'
+
+
+	//mariadb
+	implementation group: 'org.mariadb.jdbc', name: 'mariadb-java-client', version: '3.1.4'
+
+	// QR Code - zxing
+	implementation group: 'com.google.zxing', name: 'javase', version: '3.5.0'
+	implementation group: 'com.google.zxing', name: 'core', version: '3.5.0'
+
+	// AWS SDK
+	implementation platform('software.amazon.awssdk:bom:2.20.56')
+	implementation 'software.amazon.awssdk:secretsmanager'
+	implementation 'software.amazon.awssdk:auth'
+	implementation 'software.amazon.awssdk:apache-client'
+
+	//lettuce
+	implementation 'io.lettuce:lettuce-core:6.2.1.RELEASE'
+}
+
+tasks.named('test') {
+	useJUnitPlatform()
+}
+
+// === ⭐ QueryDsl 빌드 옵셥 ===
+def querydslDir = 'src/main/generated'
+//def querydslDir = "$buildDir/generated/querydsl"
+
+sourceSets {
+	main.java.srcDirs += [ querydslDir ]
+}
+
+tasks.withType(JavaCompile) {
+	options.annotationProcessorGeneratedSourcesDirectory = file(querydslDir)
+}
+
+clean.doLast {
+	file(querydslDir).deleteDir()
+}
