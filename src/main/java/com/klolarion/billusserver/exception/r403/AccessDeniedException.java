@@ -4,8 +4,4 @@ public class AccessDeniedException extends RuntimeException {
     public AccessDeniedException(String message) {
         super(message);
     }
-
-    public static AccessDeniedException accessDenied(String message) {
-        return new AccessDeniedException(message);
-    }
 } 

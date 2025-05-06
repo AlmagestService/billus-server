@@ -1,8 +1,7 @@
 package com.klolarion.billusserver.service;
 
 import com.klolarion.billusserver.domain.*;
-import com.klolarion.billusserver.domain.entity.Menu;
-import com.klolarion.billusserver.domain.entity.Store;
+import com.klolarion.billusserver.domain.entity.*;
 import com.klolarion.billusserver.dto.*;
 import com.klolarion.billusserver.dto.store.StoreResponseDto;
 import com.klolarion.billusserver.exception.r400.BadRequestException;
@@ -75,7 +74,7 @@ public class StoreService {
             QStore qStore = QStore.store;
             long execute = query.update(qStore)
                     .set(qStore.price, priceTmp)
-                    .where(qStore.id.eq(store.getId().toString()))
+                    .where(qStore.id.eq(store.getId()))
                     .execute();
             if (execute == 0) {
                 throw new BadRequestException("가격 수정에 실패했습니다.");
@@ -93,7 +92,7 @@ public class StoreService {
     public StoreResponseDto initStoreInfo(Store store) {
         QApply qApply = QApply.apply;
         boolean isApplied = query.selectFrom(qApply)
-                .where(qApply.store.id.eq(store.getId().toString())
+                .where(qApply.store.id.eq(store.getId())
                         .and(qApply.offCd.eq("F"))
                         .and(qApply.isApproved.eq("F")))
                 .fetchFirst() != null;
@@ -128,14 +127,14 @@ public class StoreService {
         QBill qBill = QBill.bill;
         try {
             boolean isApplied = query.selectFrom(qApply)
-                    .where(qApply.store.id.eq(store.getId().toString())
+                    .where(qApply.store.id.eq(store.getId())
                             .and(qApply.offCd.eq("F"))
                             .and(qApply.isApproved.eq("F")))
                     .fetchFirst() != null;
             Tuple tuple = query.select(qBill.store.price.sum(), qBill.count())
                     .from(qBill)
                     .where(qBill.date.eq(date)
-                            .and(qBill.store.id.eq(store.getId().toString())))
+                            .and(qBill.store.id.eq(store.getId())))
                     .fetchOne();
             Long count = tuple != null ? tuple.get(qBill.count()) : 0L;
             Long totalAmount = tuple != null ? Long.valueOf(tuple.get(qBill.store.price.sum())) : 0L;
@@ -177,7 +176,7 @@ public class StoreService {
         }
         QMenu qMenu = QMenu.menu;
         Menu menu = query.selectFrom(qMenu)
-                .where(qMenu.store.id.eq(store.getId().toString())
+                .where(qMenu.store.id.eq(store.getId())
                         .and(qMenu.date.eq(date))
                         .and(qMenu.meal.eq(meal)))
                 .fetchOne();
@@ -222,7 +221,7 @@ public class StoreService {
                 .set(qStore.zoneCode, storeDto.getZoneCode())
                 .set(qStore.address1, storeDto.getAddress1())
                 .set(qStore.address2, storeDto.getAddress2())
-                .where(qStore.id.eq(store.getId().toString()))
+                .where(qStore.id.eq(store.getId()))
                 .execute();
         if (execute == 0) {
             throw new BadRequestException("매장 정보 수정에 실패했습니다.");
@@ -244,7 +243,7 @@ public class StoreService {
         QStore qStore = QStore.store;
         long execute = query.update(qStore)
                 .set(qStore.password, passwordEncoder.encode(passwordDto.getNewPassword()))
-                .where(qStore.id.eq(store.getId().toString()))
+                .where(qStore.id.eq(store.getId()))
                 .execute();
         if (execute == 0) {
             throw new BadRequestException("비밀번호 변경에 실패했습니다.");
@@ -276,7 +275,7 @@ public class StoreService {
             mailHandler.send();
             long execute = query.update(qStore)
                     .set(qStore.password, passwordEncoder.encode(randomPassword))
-                    .where(qStore.id.eq(store.getId().toString()))
+                    .where(qStore.id.eq(store.getId()))
                     .execute();
             if (execute == 0) {
                 throw new BadRequestException("비밀번호 초기화에 실패했습니다.");
@@ -340,7 +339,7 @@ public class StoreService {
         QStore qStore = QStore.store;
         long execute = query.update(qStore)
                 .set(qStore.firebaseToken, firebaseToken)
-                .where(qStore.id.eq(store.getId().toString()))
+                .where(qStore.id.eq(store.getId()))
                 .execute();
         if (execute == 0) {
             throw new BadRequestException("Firebase 토큰 설정에 실패했습니다.");
@@ -355,7 +354,7 @@ public class StoreService {
         QStore qStore = QStore.store;
         long execute = query.update(qStore)
                 .set(qStore.offCd, "T")
-                .where(qStore.id.eq(store.getId().toString()))
+                .where(qStore.id.eq(store.getId()))
                 .execute();
         if (execute == 0) {
             throw new BadRequestException("회원 탈퇴에 실패했습니다.");

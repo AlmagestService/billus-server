@@ -1,8 +1,6 @@
 package com.klolarion.billusserver.service;
 
-import com.klolarion.billusserver.domain.*;
-import com.klolarion.billusserver.domain.entity.Company;
-import com.klolarion.billusserver.domain.entity.Member;
+import com.klolarion.billusserver.domain.entity.*;
 import com.klolarion.billusserver.dto.*;
 import com.klolarion.billusserver.dto.company.CompanyResponseDto;
 import com.klolarion.billusserver.dto.member.MemberResponseDto;
@@ -43,7 +41,7 @@ public class CompanyService {
         QApply qApply = QApply.apply;
 
         boolean isApplied = query.selectFrom(qApply).where(
-                qApply.company.id.eq(company.getId().toString())
+                qApply.company.id.eq(company.getId())
                         .and(qApply.isApproved.eq("F"))
                         .and(qApply.offCd.eq("F"))
         ).fetchFirst() != null;
@@ -70,7 +68,7 @@ public class CompanyService {
     public List<MemberResponseDto> findMyEmp(Company company) {
         List<MemberResponseDto> result = new ArrayList<>();
         List<Member> list = query.selectFrom(qMember)
-                .where(qMember.company.id.eq(company.getId().toString()))
+                .where(qMember.company.id.eq(company.getId()))
                 .fetch();
 
         for (Member member : list) {
@@ -105,7 +103,7 @@ public class CompanyService {
                 .set(qCompany.zoneCode, companyInitDto.getZoneCode())
                 .set(qCompany.address1, companyInitDto.getAddress1())
                 .set(qCompany.address2, companyInitDto.getAddress2())
-                .where(qCompany.id.eq(company.getId().toString()))
+                .where(qCompany.id.eq(company.getId()))
                 .execute();
 
         if (execute == 0) {
@@ -129,7 +127,7 @@ public class CompanyService {
 
         long execute = query.update(qCompany)
                 .set(qCompany.password, passwordEncoder.encode(requestDto.getNewPassword()))
-                .where(qCompany.id.eq(company.getId().toString()))
+                .where(qCompany.id.eq(company.getId()))
                 .execute();
 
         if (execute == 0) {
@@ -165,7 +163,7 @@ public class CompanyService {
 
             long execute = query.update(qCompany)
                     .set(qCompany.password, passwordEncoder.encode(randomPassword))
-                    .where(qCompany.id.eq(company.getId().toString()))
+                    .where(qCompany.id.eq(company.getId()))
                     .execute();
 
             if (execute == 0) {

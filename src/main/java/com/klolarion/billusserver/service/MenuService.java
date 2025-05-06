@@ -1,7 +1,7 @@
 package com.klolarion.billusserver.service;
 
 import com.klolarion.billusserver.domain.entity.Menu;
-import com.klolarion.billusserver.domain.QMenu;
+import com.klolarion.billusserver.domain.entity.QMenu;
 import com.klolarion.billusserver.domain.entity.Store;
 import com.klolarion.billusserver.dto.InfoRequestDto;
 import com.klolarion.billusserver.dto.InfoResponseDto;
@@ -45,7 +45,7 @@ public class MenuService {
         QMenu qMenu = QMenu.menu;
         Menu fetched = query.selectFrom(qMenu).where(
                 qMenu.date.eq(requestDto.getDate())
-                        .and(qMenu.store.id.eq(store.getId().toString()))
+                        .and(qMenu.store.id.eq(store.getId()))
                         .and(qMenu.meal.eq(requestDto.getMeal()))
         ).fetchOne();
         if (fetched != null) {

@@ -2,7 +2,7 @@ package com.klolarion.billusserver.util;
 
 
 import com.klolarion.billusserver.exception.r401.AuthFailureException;
-import com.klolarion.billusserver.exception.r406.AccessDeniedException;
+import com.klolarion.billusserver.exception.r403.AccessDeniedException;
 import com.klolarion.billusserver.exception.r500.RedisSessionException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

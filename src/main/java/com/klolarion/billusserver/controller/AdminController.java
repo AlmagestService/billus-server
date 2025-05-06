@@ -48,7 +48,7 @@ public class AdminController {
      * */
     @PostMapping("/disable/company")
     public ResponseEntity<?> disableCompany(@RequestBody InfoRequestDto requestDto) {
-            boolean result = applyService.disableCompany(requestDto);
+            applyService.disableCompany(requestDto);
 
             return ResponseEntity.status(HttpStatus.OK).body("Company disabled");
     }

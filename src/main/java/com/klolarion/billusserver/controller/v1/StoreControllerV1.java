@@ -43,7 +43,7 @@ public class StoreControllerV1 {
             "OK", 
             "SUCCESS", 
             "매장 정보 조회 성공", 
-            storeService.initStore()
+            storeService.initStoreInfo(customStoreDetails.getStore())
         ));
     }
 
@@ -53,8 +53,8 @@ public class StoreControllerV1 {
      * @return 중복 확인 결과
      */
     @PostMapping("/tel")
-    public ResponseEntity<?> lookTelUpdate(AuthRequestDto registerDto) {
-        storeService.lookTelUpdate(registerDto.getTel());
+    public ResponseEntity<?> lookTelUpdate(@RequestBody AuthRequestDto registerDto, @AuthenticationPrincipal CustomStoreDetails customStoreDetails) {
+        storeService.lookTelUpdate(registerDto.getTel(), customStoreDetails.getStore());
         return ResponseEntity.ok(CommonResponseHelper.createResponse(
             "200", 
             "OK", 
@@ -70,8 +70,8 @@ public class StoreControllerV1 {
      * @return 중복 확인 결과
      */
     @PostMapping("/email")
-    public ResponseEntity<?> lookEmailUpdate(AuthRequestDto registerDto) {
-        storeService.lookEmailUpdate(registerDto.getEmail());
+    public ResponseEntity<?> lookEmailUpdate(AuthRequestDto registerDto, @AuthenticationPrincipal CustomStoreDetails customStoreDetails) {
+        storeService.lookEmailUpdate(registerDto.getEmail(), customStoreDetails.getStore());
         return ResponseEntity.ok(CommonResponseHelper.createResponse(
             "200", 
             "OK", 
@@ -124,8 +124,8 @@ public class StoreControllerV1 {
      * @return 수정 결과
      */
     @PutMapping("/info")
-    public ResponseEntity<?> changeInfo(@RequestBody StoreResponseDto storeDto) {
-        storeService.changeInfo(storeDto);
+    public ResponseEntity<?> updateStoreInfo(@RequestBody StoreResponseDto storeDto, @AuthenticationPrincipal CustomStoreDetails customStoreDetails) {
+        storeService.updateStoreInfo(storeDto, customStoreDetails.getStore());
         return ResponseEntity.ok(CommonResponseHelper.createResponse(
             "200", 
             "OK", 
@@ -141,8 +141,8 @@ public class StoreControllerV1 {
      * @return 변경 결과
      */
     @PutMapping("/pw")
-    public ResponseEntity<?> changePassword(@RequestBody InfoRequestDto passwordDto) {
-        storeService.changePassword(passwordDto);
+    public ResponseEntity<?> changePassword(@RequestBody InfoRequestDto passwordDto, @AuthenticationPrincipal CustomStoreDetails customStoreDetails) {
+        storeService.changePassword(passwordDto, customStoreDetails.getStore());
         return ResponseEntity.ok(CommonResponseHelper.createResponse(
             "200", 
             "OK", 
@@ -158,8 +158,8 @@ public class StoreControllerV1 {
      * @return 수정 결과
      */
     @PutMapping("/price")
-    public ResponseEntity<?> updatePrice(@RequestBody InfoRequestDto priceDto) {
-        storeService.updatePrice(priceDto.getPrice());
+    public ResponseEntity<?> updatePrice(@RequestBody InfoRequestDto priceDto, @AuthenticationPrincipal CustomStoreDetails customStoreDetails) {
+        storeService.updatePrice(priceDto.getPrice(), customStoreDetails.getStore());
         return ResponseEntity.ok(CommonResponseHelper.createResponse(
             "200", 
             "OK", 
@@ -201,8 +201,8 @@ public class StoreControllerV1 {
      * @return 탈퇴 결과
      */
     @DeleteMapping("/")
-    public ResponseEntity<?> leave() {
-        storeService.leave();
+    public ResponseEntity<?> leave(@AuthenticationPrincipal CustomStoreDetails customStoreDetails) {
+        storeService.leave(customStoreDetails.getStore());
         return ResponseEntity.ok(CommonResponseHelper.createResponse(
             "200", 
             "OK", 
@@ -219,13 +219,13 @@ public class StoreControllerV1 {
      * @return 메뉴 정보
      */
     @GetMapping("/my/menus")
-    public ResponseEntity<?> getMyMenu(@RequestParam String date, String meal) {
+    public ResponseEntity<?> getMyMenu(@RequestParam String date, String meal, @AuthenticationPrincipal CustomStoreDetails customStoreDetails) {
         return ResponseEntity.ok(CommonResponseHelper.createResponse(
             "200", 
             "OK", 
             "SUCCESS", 
             "메뉴 조회 성공", 
-            storeService.getMyMenu(date, meal)
+            storeService.getMyMenu(date, meal, customStoreDetails.getStore())
         ));
     }
 
@@ -235,13 +235,13 @@ public class StoreControllerV1 {
      * @return 일별 매출 합계
      */
     @GetMapping("/bill/day/all/sum")
-    public ResponseEntity<?> storeDayAllSum(@RequestParam String date) {
+    public ResponseEntity<?> storeDayAllSum(@RequestParam String date, @AuthenticationPrincipal CustomStoreDetails customStoreDetails) {
         return ResponseEntity.ok(CommonResponseHelper.createResponse(
             "200", 
             "OK", 
             "SUCCESS", 
             "일별 전체 매출 합계 조회 성공", 
-            closeSumService.storeDayAllSum(date)
+            closeSumService.storeDayAllSum(date, customStoreDetails.getStore())
         ));
     }
 
@@ -251,13 +251,13 @@ public class StoreControllerV1 {
      * @return 일별 매출 합계
      */
     @GetMapping("/bill/day/all/sum/mobile")
-    public ResponseEntity<?> storeDayAllSumMobile(String date) {
+    public ResponseEntity<?> storeDayAllSumMobile(String date, @AuthenticationPrincipal CustomStoreDetails customStoreDetails) {
         return ResponseEntity.ok(CommonResponseHelper.createResponse(
             "200", 
             "OK", 
             "SUCCESS", 
             "일별 전체 매출 합계 조회 성공", 
-            closeSumService.storeDayAllSumMobile(date)
+            closeSumService.storeDayAllSumMobile(date, customStoreDetails.getStore())
         ));
     }
 
@@ -267,13 +267,13 @@ public class StoreControllerV1 {
      * @return 월별 매출 합계
      */
     @GetMapping("/bill/month/all/sum")
-    public ResponseEntity<?> storeMonthAllSum(@RequestParam String month) {
+    public ResponseEntity<?> storeMonthAllSum(@RequestParam String month, @AuthenticationPrincipal CustomStoreDetails customStoreDetails) {
         return ResponseEntity.ok(CommonResponseHelper.createResponse(
             "200", 
             "OK", 
             "SUCCESS", 
             "월별 전체 매출 합계 조회 성공", 
-            closeSumService.storeMonthAllSum(month)
+            closeSumService.storeMonthAllSum(month, customStoreDetails.getStore())
         ));
     }
 
@@ -283,13 +283,13 @@ public class StoreControllerV1 {
      * @return 월별 매출 합계
      */
     @GetMapping("/bill/month/all/sum/mobile")
-    public ResponseEntity<?> storeMonthAllSumMobile(String month) {
+    public ResponseEntity<?> storeMonthAllSumMobile(String month, @AuthenticationPrincipal CustomStoreDetails customStoreDetails) {
         return ResponseEntity.ok(CommonResponseHelper.createResponse(
             "200", 
             "OK", 
             "SUCCESS", 
             "월별 전체 매출 합계 조회 성공", 
-            closeSumService.storeMonthAllSumMobile(month)
+            closeSumService.storeMonthAllSumMobile(month, customStoreDetails.getStore())
         ));
     }
 
@@ -299,13 +299,13 @@ public class StoreControllerV1 {
      * @return 연별 매출 합계
      */
     @GetMapping("/bill/year/all/sum")
-    public ResponseEntity<?> storeYearAllSum(@RequestParam String year) {
+    public ResponseEntity<?> storeYearAllSum(@RequestParam String year, @AuthenticationPrincipal CustomStoreDetails customStoreDetails) {
         return ResponseEntity.ok(CommonResponseHelper.createResponse(
             "200", 
             "OK", 
             "SUCCESS", 
             "연별 전체 매출 합계 조회 성공", 
-            closeSumService.storeYearAllSum(year)
+            closeSumService.storeYearAllSum(year, customStoreDetails.getStore())
         ));
     }
 
@@ -315,13 +315,13 @@ public class StoreControllerV1 {
      * @return 연별 매출 합계
      */
     @GetMapping("/bill/year/all/sum/mobile")
-    public ResponseEntity<?> storeYearAllSumMobile(String year) {
+    public ResponseEntity<?> storeYearAllSumMobile(String year, @AuthenticationPrincipal CustomStoreDetails customStoreDetails) {
         return ResponseEntity.ok(CommonResponseHelper.createResponse(
             "200", 
             "OK", 
             "SUCCESS", 
             "연별 전체 매출 합계 조회 성공", 
-            closeSumService.storeYearAllSumMobile(year)
+            closeSumService.storeYearAllSumMobile(year, customStoreDetails.getStore())
         ));
     }
 
@@ -331,13 +331,13 @@ public class StoreControllerV1 {
      * @return 회사별 일 매출 목록
      */
     @GetMapping("/bill/day/company/total")
-    public ResponseEntity<?> storeDayCompanySum(@RequestParam String date) {
+    public ResponseEntity<?> storeDayCompanySum(@RequestParam String date, @AuthenticationPrincipal CustomStoreDetails customStoreDetails) {
         return ResponseEntity.ok(CommonResponseHelper.createResponse(
             "200", 
             "OK", 
             "SUCCESS", 
             "일별 회사별 매출 합계 조회 성공", 
-            billService.dailyCompanyBillTotalList(date)
+            billService.dailyCompanyBillTotalList(date, customStoreDetails.getStore())
         ));
     }
 
@@ -347,13 +347,13 @@ public class StoreControllerV1 {
      * @return 회사별 월 매출 목록
      */
     @GetMapping("/bill/month/company/total")
-    public ResponseEntity<?> storeMonthCompanyEachSum(@RequestParam String month) {
+    public ResponseEntity<?> storeMonthCompanyEachSum(@RequestParam String month, @AuthenticationPrincipal CustomStoreDetails customStoreDetails) {
         return ResponseEntity.ok(CommonResponseHelper.createResponse(
             "200", 
             "OK", 
             "SUCCESS", 
             "월별 회사별 매출 합계 조회 성공", 
-            billService.monthlyCompanyBillTotalList(month)
+            billService.monthlyCompanyBillTotalList(month, customStoreDetails.getStore())
         ));
     }
 
@@ -363,13 +363,13 @@ public class StoreControllerV1 {
      * @return 회사별 일 매출 목록
      */
     @GetMapping("/bill/day/company/total/mobile")
-    public ResponseEntity<?> storeDayCompanySumMobile(String date) {
+    public ResponseEntity<?> storeDayCompanySumMobile(@RequestParam String date, @AuthenticationPrincipal CustomStoreDetails customStoreDetails) {
         return ResponseEntity.ok(CommonResponseHelper.createResponse(
             "200", 
             "OK", 
             "SUCCESS", 
             "일별 회사별 매출 합계 조회 성공", 
-            billService.dailyCompanyBillTotalList(date)
+            billService.dailyCompanyBillTotalList(date, customStoreDetails.getStore())
         ));
     }
 
@@ -379,13 +379,13 @@ public class StoreControllerV1 {
      * @return 회사별 월 매출 목록
      */
     @GetMapping("/bill/month/company/total/mobile")
-    public ResponseEntity<?> storeMonthCompanyEachSumMobile(String month) {
+    public ResponseEntity<?> storeMonthCompanyEachSumMobile(@RequestParam String month, @AuthenticationPrincipal CustomStoreDetails customStoreDetails) {
         return ResponseEntity.ok(CommonResponseHelper.createResponse(
             "200", 
             "OK", 
             "SUCCESS", 
             "월별 회사별 매출 합계 조회 성공", 
-            billService.monthlyCompanyBillTotalList(month)
+            billService.monthlyCompanyBillTotalList(month, customStoreDetails.getStore())
         ));
     }
 }

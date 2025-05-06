@@ -5,8 +5,8 @@ import com.google.firebase.messaging.FirebaseMessagingException;
 import com.google.firebase.messaging.Message;
 import com.google.firebase.messaging.Notification;
 import com.klolarion.billusserver.domain.entity.Bill;
-import com.klolarion.billusserver.domain.QBill;
-import com.klolarion.billusserver.domain.QStore;
+import com.klolarion.billusserver.domain.entity.QBill;
+import com.klolarion.billusserver.domain.entity.QStore;
 import com.klolarion.billusserver.domain.entity.Store;
 import com.querydsl.core.Tuple;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -36,7 +36,7 @@ public class FCMNotificationService {
         try {
             // 장부등록에 사용된 매장 UUID로 매장 조회
             Store store = query.selectFrom(qStore)
-                    .where(qStore.id.eq(newBill.getStore().getId().toString()))
+                    .where(qStore.id.eq(newBill.getStore().getId()))
                     .fetchOne();
 
             if (store != null) {
@@ -44,7 +44,7 @@ public class FCMNotificationService {
                 Tuple tuple = query.select(qBill.store.price.sum(), qBill.count())
                         .from(qBill)
                         .where(qBill.date.eq(newBill.getDate())
-                                .and(qBill.store.id.eq(store.getId().toString())))
+                                .and(qBill.store.id.eq(store.getId())))
                         .fetchOne();
 
 

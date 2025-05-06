@@ -4,6 +4,7 @@ import com.klolarion.billusserver.domain.entity.Company;
 import org.springframework.security.core.GrantedAuthority;
 
 import java.util.Collection;
+import java.util.UUID;
 
 
 public class CustomCompanyDetails implements AuthUserDetails {
@@ -54,7 +55,7 @@ public class CustomCompanyDetails implements AuthUserDetails {
     }
 
     @Override
-    public String getUserId() {
+    public UUID getUserId() {
         return this.company.getId();
     }
 }

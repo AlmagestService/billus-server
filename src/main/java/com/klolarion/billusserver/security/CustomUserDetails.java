@@ -4,6 +4,7 @@ import com.klolarion.billusserver.domain.entity.Member;
 import org.springframework.security.core.GrantedAuthority;
 
 import java.util.Collection;
+import java.util.UUID;
 
 
 public class CustomUserDetails implements AuthUserDetails {
@@ -53,7 +54,7 @@ public class CustomUserDetails implements AuthUserDetails {
     public boolean isEnabled(){return true;}
 
     @Override
-    public String getUserId() {
+    public UUID getUserId() {
         return member.getId();
     }
 

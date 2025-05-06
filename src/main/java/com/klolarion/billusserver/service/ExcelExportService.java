@@ -1,6 +1,6 @@
 package com.klolarion.billusserver.service;
 
-import com.klolarion.billusserver.domain.QStore;
+import com.klolarion.billusserver.domain.entity.QStore;
 import com.klolarion.billusserver.domain.entity.Store;
 import com.klolarion.billusserver.dto.bill.BillResponseDto;
 import com.klolarion.billusserver.dto.member.MemberResponseDto;
@@ -22,6 +22,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import jakarta.persistence.EntityManager;
 
@@ -986,7 +987,7 @@ public class ExcelExportService {
 
             QStore qStore = QStore.store;
             Store store = query.selectFrom(qStore)
-                    .where(qStore.id.eq(storeId))
+                    .where(qStore.id.eq(UUID.fromString(storeId)))
                     .fetchOne();
 
             String storeName = store.getStoreName();

@@ -43,7 +43,7 @@ public class ExportStoreControllerV1 {
      */
     @GetMapping("/store/month/detail/excel")
     public ResponseEntity<byte[]> companyMonthDetail(@RequestParam String month, @AuthenticationPrincipal CustomStoreDetails customStoreDetails){
-        List<Object[]> list = billService.monthlyStoreBillDetail(month);
+        List<Object[]> list = billService.monthlyStoreBillDetail(month, customStoreDetails.getStore());
         return excelExportService.storeMonthlyDetailBillExcel(list, customStoreDetails.getStore(), month);
     }
 
@@ -53,8 +53,8 @@ public class ExportStoreControllerV1 {
      * @return 일별 장부 엑셀 파일
      */
     @GetMapping("/store/daily/excel")
-    public ResponseEntity<byte[]> exportStoreDailyBillExcel(@RequestParam String date){
-        List<BillResponseDto> billList = billService.dailyCompanyBillTotalList(date);
+    public ResponseEntity<byte[]> exportStoreDailyBillExcel(@RequestParam String date, @AuthenticationPrincipal CustomStoreDetails customStoreDetails){
+        List<BillResponseDto> billList = billService.dailyCompanyBillTotalList(date, customStoreDetails.getStore());
         return excelExportService.storeDailyBillExcel(billList);
     }
 
@@ -64,8 +64,8 @@ public class ExportStoreControllerV1 {
      * @return 월별 장부 엑셀 파일
      */
     @GetMapping("/store/monthly/excel")
-    public ResponseEntity<byte[]> exportStoreMonthlyBillExcel(@RequestParam String month){
-        List<BillResponseDto> billList = billService.monthlyCompanyBillTotalList(month);
+    public ResponseEntity<byte[]> exportStoreMonthlyBillExcel(@RequestParam String month, @AuthenticationPrincipal CustomStoreDetails customStoreDetails){
+        List<BillResponseDto> billList = billService.monthlyCompanyBillTotalList(month, customStoreDetails.getStore());
         return excelExportService.storeMonthlyCompanyTotalExcel(billList);
     }
 }

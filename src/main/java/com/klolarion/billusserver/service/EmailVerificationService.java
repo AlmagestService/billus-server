@@ -1,9 +1,8 @@
 package com.klolarion.billusserver.service;
 
 import com.klolarion.billusserver.domain.*;
-import com.klolarion.billusserver.domain.entity.Company;
-import com.klolarion.billusserver.domain.entity.Otp;
-import com.klolarion.billusserver.domain.entity.Store;
+import com.klolarion.billusserver.domain.QOtp;
+import com.klolarion.billusserver.domain.entity.*;
 import com.klolarion.billusserver.exception.r400.BadRequestException;
 import com.klolarion.billusserver.util.MailHandler;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -98,12 +97,12 @@ public class EmailVerificationService {
         if (target.equals("STORE")) {
             query.update(qStore)
                  .set(qStore.isEmailVerified, "T")
-                 .where(qStore.id.eq(id))
+                 .where(qStore.id.eq(UUID.fromString(id)))
                  .execute();
         } else {
             query.update(qCompany)
                  .set(qCompany.isEmailVerified, "T")
-                 .where(qCompany.id.eq(id))
+                 .where(qCompany.id.eq(UUID.fromString(id)))
                  .execute();
         }
     }

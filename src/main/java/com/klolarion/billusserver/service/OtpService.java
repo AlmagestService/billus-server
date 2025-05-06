@@ -1,11 +1,7 @@
 package com.klolarion.billusserver.service;
 
-import com.klolarion.billusserver.domain.QCompany;
 import com.klolarion.billusserver.domain.QOtp;
-import com.klolarion.billusserver.domain.QStore;
-import com.klolarion.billusserver.domain.entity.Company;
-import com.klolarion.billusserver.domain.entity.Otp;
-import com.klolarion.billusserver.domain.entity.Store;
+import com.klolarion.billusserver.domain.entity.*;
 import com.klolarion.billusserver.util.GenerateCodeUtil;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.transaction.Transactional;
@@ -31,7 +27,7 @@ public class OtpService {
     public String generateStoreOtp(String storeId) {
         UUID id = UUID.fromString(storeId);
         Store store = query.selectFrom(qStore)
-                         .where(qStore.id.eq(id.toString()))
+                         .where(qStore.id.eq(id))
                          .fetchOne();
         
         if (store == null) {
@@ -62,7 +58,7 @@ public class OtpService {
     public String generateCompanyOtp(String companyId) {
         UUID id = UUID.fromString(companyId);
         Company company = query.selectFrom(qCompany)
-                            .where(qCompany.id.eq(id.toString()))
+                            .where(qCompany.id.eq(id))
                             .fetchOne();
         
         if (company == null) {

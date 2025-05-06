@@ -39,11 +39,12 @@ public class ExportCompanyControllerV1 {
     /**
      * 회사 월별 직원별 매출 합계 엑셀 다운로드 API
      * @param month 조회할 월
+     * @param customCompanyDetails 인증된 회사 정보
      * @return 직원별 월 매출 합계 엑셀 파일
      */
     @GetMapping("/company/month/employee/total/excel")
-    public ResponseEntity<byte[]> companyMonthMemberTotal(@RequestParam String month){
-        List<BillResponseDto> list = billService.monthlyEmployeeBillTotal(month);
+    public ResponseEntity<byte[]> companyMonthMemberTotal(@RequestParam String month, @AuthenticationPrincipal CustomCompanyDetails customCompanyDetails){
+        List<BillResponseDto> list = billService.monthlyEmployeeBillTotal(month, customCompanyDetails.getCompany());
         return excelExportService.companyMonthlyEmpTotalBillExcel(list);
     }
 
@@ -51,34 +52,37 @@ public class ExportCompanyControllerV1 {
      * 회사 월별 직원별 상세 매출 엑셀 다운로드 API
      * @param month 조회할 월
      * @param id 직원 ID
+     * @param customCompanyDetails 인증된 회사 정보
      * @return 직원별 월 상세 매출 엑셀 파일
      */
     @GetMapping("/company/month/employee/detail/excel")
-    public ResponseEntity<byte[]> companyMonthMemberDetail(@RequestParam String month, String id){
-        List<BillResponseDto> list = billService.monthlyEmployeeBillList(month, id);
+    public ResponseEntity<byte[]> companyMonthMemberDetail(@RequestParam String month, String id, @AuthenticationPrincipal CustomCompanyDetails customCompanyDetails){
+        List<BillResponseDto> list = billService.monthlyEmployeeBillList(month, id, customCompanyDetails.getCompany());
         return excelExportService.companyMonthlyEmpDetailBillExcel(list);
     }
 
     /**
      * 회사 월별 매장별 매출 합계 엑셀 다운로드 API
      * @param month 조회할 월
+     * @param customCompanyDetails 인증된 회사 정보
      * @return 매장별 월 매출 합계 엑셀 파일
      */
     @GetMapping("/company/month/store/total/excel")
-    public ResponseEntity<byte[]> companyMonthStoreTotal(@RequestParam String month){
-        List<BillResponseDto> list = billService.monthlyStoreBillTotalList(month);
+    public ResponseEntity<byte[]> companyMonthStoreTotal(@RequestParam String month, @AuthenticationPrincipal CustomCompanyDetails customCompanyDetails){
+        List<BillResponseDto> list = billService.monthlyStoreBillTotalList(month, customCompanyDetails.getCompany());
         return excelExportService.companyMonthlyStoreTotalExcel(list);
     }
 
     /**
      * 회사 월별 매장별 상세 매출 엑셀 다운로드 API
      * @param month 조회할 월
-     * @param id 매장 ID
+     * @param storeId 매장 ID
+     * @param customCompanyDetails 인증된 회사 정보
      * @return 매장별 월 상세 매출 엑셀 파일
      */
     @GetMapping("/company/month/store/detail/excel")
-    public ResponseEntity<byte[]> companyMonthStoreDetail(@RequestParam String month, String id){
-        List<BillResponseDto> list = billService.monthlyStoreBillDetailList(month, id);
+    public ResponseEntity<byte[]> companyMonthStoreDetail(@RequestParam String month, String storeId, @AuthenticationPrincipal CustomCompanyDetails customCompanyDetails){
+        List<BillResponseDto> list = billService.monthlyStoreBillDetailList(month, storeId, customCompanyDetails.getCompany());
         return excelExportService.companyMonthlyStoreDetailBillExcel(list);
     }
 
@@ -86,11 +90,12 @@ public class ExportCompanyControllerV1 {
      * 회사 월별 상세 매출 엑셀 다운로드 API
      * @param month 조회할 월
      * @param id 회사 ID
+     * @param customCompanyDetails 인증된 회사 정보
      * @return 회사 월 상세 매출 엑셀 파일
      */
     @GetMapping("/company/month/detail/excel")
     public ResponseEntity<byte[]> companyMonthDetail(@RequestParam String month, String storeId, @AuthenticationPrincipal CustomCompanyDetails customCompanyDetails){
-        List<Object[]> list = billService.monthlyCompanyBillDetail(month, storeId);
+        List<Object[]> list = billService.monthlyCompanyBillDetail(month, storeId, customCompanyDetails.getCompany());
         return excelExportService.companyMonthlyDetailBillExcel(list, customCompanyDetails.getCompany().getCompanyName(), storeId, month);
     }
 

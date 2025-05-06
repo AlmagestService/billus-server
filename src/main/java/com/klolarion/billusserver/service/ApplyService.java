@@ -1,10 +1,6 @@
 package com.klolarion.billusserver.service;
-
-import com.klolarion.billusserver.domain.*;
-import com.klolarion.billusserver.domain.entity.Apply;
-import com.klolarion.billusserver.domain.entity.Company;
-import com.klolarion.billusserver.domain.entity.Member;
-import com.klolarion.billusserver.domain.entity.Store;
+;
+import com.klolarion.billusserver.domain.entity.*;
 import com.klolarion.billusserver.dto.InfoRequestDto;
 import com.klolarion.billusserver.dto.InfoResponseDto;
 import com.klolarion.billusserver.exception.r400.BadRequestException;
@@ -43,7 +39,7 @@ public class ApplyService {
 
         QCompany qCompany = QCompany.company;
         QApply qApply = QApply.apply;
-        String companyId = requestDto.getId();
+        UUID companyId = UUID.fromString(requestDto.getId());
 
         // 회사 존재 여부 확인
         Company company = query.selectFrom(qCompany)
@@ -80,7 +76,7 @@ public class ApplyService {
 
         QStore qStore = QStore.store;
         QApply qApply = QApply.apply;
-        String storeId = requestDto.getId();
+        UUID storeId = UUID.fromString(requestDto.getId());
 
         // 매장 존재 여부 확인
         Store store = query.selectFrom(qStore)
@@ -120,7 +116,7 @@ public class ApplyService {
                 .leftJoin(qApply.member, qMember).fetchJoin()
                 .where(qApply.member.isNotNull()
                         .and(qApply.isApproved.eq("F"))
-                        .and(qApply.company.id.eq(company.getId().toString()))
+                        .and(qApply.company.id.eq(company.getId()))
                         .and(qApply.offCd.eq("F"))
                         .and(qApply.isRejected.eq("F")))
                 .fetch();
@@ -149,13 +145,13 @@ public class ApplyService {
             throw new BadRequestException("사용자 식별자 누락");
         }
 
-        String memberId = requestDto.getId();
+        UUID memberId = UUID.fromString(requestDto.getId());
         QApply qApply = QApply.apply;
 
         // 신청 존재 여부 확인
         Apply apply = query.selectFrom(qApply)
                 .where(qApply.member.id.eq(memberId)
-                        .and(qApply.company.id.eq(company.getId().toString()))
+                        .and(qApply.company.id.eq(company.getId()))
                         .and(qApply.isApproved.eq("F"))
                         .and(qApply.isRejected.eq("F"))
                         .and(qApply.offCd.eq("F")))
@@ -189,13 +185,13 @@ public class ApplyService {
             throw new BadRequestException("사용자 식별자 누락");
         }
 
-        String memberId = requestDto.getId();
+        UUID memberId = UUID.fromString(requestDto.getId());
         QApply qApply = QApply.apply;
 
         // 신청 존재 여부 확인
         Apply apply = query.selectFrom(qApply)
                 .where(qApply.member.id.eq(memberId)
-                        .and(qApply.company.id.eq(company.getId().toString()))
+                        .and(qApply.company.id.eq(company.getId()))
                         .and(qApply.isApproved.eq("T"))
                         .and(qApply.offCd.eq("F")))
                 .fetchOne();
@@ -230,13 +226,13 @@ public class ApplyService {
             throw new BadRequestException("사용자 식별자 누락");
         }
 
-        String memberId = requestDto.getId();
+        UUID memberId = UUID.fromString(requestDto.getId());
         QApply qApply = QApply.apply;
 
         // 신청 존재 여부 확인
         Apply apply = query.selectFrom(qApply)
                 .where(qApply.member.id.eq(memberId)
-                        .and(qApply.company.id.eq(company.getId().toString()))
+                        .and(qApply.company.id.eq(company.getId()))
                         .and(qApply.isApproved.eq("F"))
                         .and(qApply.isRejected.eq("F"))
                         .and(qApply.offCd.eq("F")))
@@ -278,7 +274,7 @@ public class ApplyService {
         }
 
         // 회사 존재 여부 확인
-        String companyId = requestDto.getId();
+        UUID companyId = UUID.fromString(requestDto.getId());
         QCompany qCompany = QCompany.company;
         Company company = query.selectFrom(qCompany)
                 .where(qCompany.id.eq(companyId))
@@ -309,7 +305,7 @@ public class ApplyService {
             throw new BadRequestException("회사 식별자 누락");
         }
 
-        String companyId = requestDto.getId();
+        UUID companyId = UUID.fromString(requestDto.getId());
         QCompany qCompany = QCompany.company;
         Company company = query.selectFrom(qCompany)
                 .where(qCompany.id.eq(companyId))
@@ -338,14 +334,14 @@ public class ApplyService {
         // 회원 소속 회사 제거
         query.update(qMember)
                 .setNull(qMember.company)
-                .where(qMember.id.eq(member.getId().toString()))
+                .where(qMember.id.eq(member.getId()))
                 .execute();
 
         // 신청 취소 처리
         query.update(qApply)
                 .set(qApply.offCd, "T")
-                .where(qApply.member.id.eq(member.getId().toString())
-                        .and(qApply.company.id.eq(member.getCompany().getId().toString()))
+                .where(qApply.member.id.eq(member.getId())
+                        .and(qApply.company.id.eq(member.getCompany().getId()))
                         .and(qApply.isRejected.eq("F")))
                 .execute();
 

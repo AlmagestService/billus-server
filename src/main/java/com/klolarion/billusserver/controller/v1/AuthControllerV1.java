@@ -56,9 +56,9 @@ public class AuthControllerV1 {
         }
 
         if (requestDto.getUserRole().equals("STORE")) {
-            authService.lookStoreAccount(requestDto);
+            authService.validateDuplicateAccount(requestDto);
         } else if (requestDto.getUserRole().equals("COMPANY")) {
-            authService.lookCompanyAccount(requestDto);
+            authService.validateDuplicateAccount(requestDto);
         } else {
             return ResponseEntity.badRequest().body(CommonResponseHelper.createResponse(
                 "400", 
@@ -94,9 +94,9 @@ public class AuthControllerV1 {
         }
 
         if (requestDto.getUserRole().equals("STORE")) {
-            authService.lookStoreTel(requestDto);
+            authService.validateDuplicateTel(requestDto);
         } else if (requestDto.getUserRole().equals("COMPANY")) {
-            authService.lookCompanyTel(requestDto);
+            authService.validateDuplicateTel(requestDto);
         } else {
             return ResponseEntity.badRequest().body(CommonResponseHelper.createResponse(
                 "400", 
@@ -132,9 +132,9 @@ public class AuthControllerV1 {
         }
 
         if (requestDto.getUserRole().equals("STORE")) {
-            authService.lookStoreEmail(requestDto);
+            authService.validateDuplicateEmail(requestDto);
         } else if (requestDto.getUserRole().equals("COMPANY")) {
-            authService.lookCompanyEmail(requestDto);
+            authService.validateDuplicateEmail(requestDto);
         } else {
             return ResponseEntity.badRequest().body(CommonResponseHelper.createResponse(
                 "400", 
@@ -172,7 +172,7 @@ public class AuthControllerV1 {
         }
 
         if (requestDto.getUserRole().equals("STORE") || requestDto.getUserRole().equals("COMPANY")) {
-            authService.lookBizNum(requestDto, request, response);
+            authService.validateBizNum(requestDto, request, response);
         } else {
             return ResponseEntity.badRequest().body(CommonResponseHelper.createResponse(
                 "400", 

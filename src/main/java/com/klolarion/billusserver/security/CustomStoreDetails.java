@@ -5,6 +5,7 @@ import com.klolarion.billusserver.domain.entity.Store;
 import org.springframework.security.core.GrantedAuthority;
 
 import java.util.Collection;
+import java.util.UUID;
 
 
 public class CustomStoreDetails implements AuthUserDetails {
@@ -55,7 +56,7 @@ public class CustomStoreDetails implements AuthUserDetails {
     }
 
     @Override
-    public String getUserId() {
+    public UUID getUserId() {
         return store.getId();
     }
 }

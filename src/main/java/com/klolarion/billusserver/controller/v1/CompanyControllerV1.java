@@ -200,14 +200,13 @@ public class CompanyControllerV1 {
      * @return 일별 매출 합계
      */
     @GetMapping("/day/all/sum")
-    public ResponseEntity<?> companyDayAllSum(@RequestParam String date,
-                                              @AuthenticationPrincipal CustomCompanyDetails customCompanyDetails) {
+    public ResponseEntity<?> companyDayAllSum(@RequestParam String date, @AuthenticationPrincipal CustomCompanyDetails customCompanyDetails) {
         return ResponseEntity.ok(CommonResponseHelper.createResponse(
             "200", 
             "OK", 
             "SUCCESS", 
             "일별 전체 매출 합계 조회 성공", 
-            closeSumService.companyDayAllSum(date)
+            closeSumService.companyDayAllSum(date, customCompanyDetails.getCompany())
         ));
     }
 
@@ -218,14 +217,13 @@ public class CompanyControllerV1 {
      * @return 월별 매출 합계
      */
     @GetMapping("/month/all/sum")
-    public ResponseEntity<?> companyMonthAllSum(@RequestParam String month,
-                                                @AuthenticationPrincipal CustomCompanyDetails customCompanyDetails) {
+    public ResponseEntity<?> companyMonthAllSum(@RequestParam String month, @AuthenticationPrincipal CustomCompanyDetails customCompanyDetails) {
         return ResponseEntity.ok(CommonResponseHelper.createResponse(
             "200", 
             "OK", 
             "SUCCESS", 
             "월별 전체 매출 합계 조회 성공", 
-            closeSumService.companyMonthAllSum(month)
+            closeSumService.companyMonthAllSum(month, customCompanyDetails.getCompany())
         ));
     }
 
@@ -236,14 +234,13 @@ public class CompanyControllerV1 {
      * @return 연별 매출 합계
      */
     @GetMapping("/year/all/sum")
-    public ResponseEntity<?> companyYearAllSum(@RequestParam String year,
-                                               @AuthenticationPrincipal CustomCompanyDetails customCompanyDetails) {
+    public ResponseEntity<?> companyYearAllSum(@RequestParam String year, @AuthenticationPrincipal CustomCompanyDetails customCompanyDetails) {
         return ResponseEntity.ok(CommonResponseHelper.createResponse(
             "200", 
             "OK", 
             "SUCCESS", 
             "연별 전체 매출 합계 조회 성공", 
-            closeSumService.companyYearAllSum(year)
+            closeSumService.companyYearAllSum(year, customCompanyDetails.getCompany())
         ));
     }
 
@@ -254,14 +251,13 @@ public class CompanyControllerV1 {
      * @return 직원별 월 매출 목록
      */
     @GetMapping("/month/employee/total")
-    public ResponseEntity<?> companyMonthMemberTotal(@RequestParam String month,
-                                                     @AuthenticationPrincipal CustomCompanyDetails customCompanyDetails) {
+    public ResponseEntity<?> companyMonthMemberTotal(@RequestParam String month, @AuthenticationPrincipal CustomCompanyDetails customCompanyDetails) {
         return ResponseEntity.ok(CommonResponseHelper.createResponse(
             "200", 
             "OK", 
             "SUCCESS", 
             "월별 직원별 총 매출 조회 성공", 
-            billService.monthlyEmployeeBillTotal(month)
+            billService.monthlyEmployeeBillTotal(month, customCompanyDetails.getCompany())
         ));
     }
 
@@ -269,33 +265,34 @@ public class CompanyControllerV1 {
      * 월별 직원 상세 매출 조회 API
      * @param month 조회할 월
      * @param id 직원 ID
+     * @param customCompanyDetails 인증된 회사 정보
      * @return 직원 상세 매출 목록
      */
     @GetMapping("/month/employee/detail")
-    public ResponseEntity<?> companyMonthMemberDetail(@RequestParam String month, String id) {
+    public ResponseEntity<?> companyMonthMemberDetail(@RequestParam String month, String id, @AuthenticationPrincipal CustomCompanyDetails customCompanyDetails) {
         return ResponseEntity.ok(CommonResponseHelper.createResponse(
             "200", 
             "OK", 
             "SUCCESS", 
             "월별 직원 상세 매출 조회 성공", 
-            billService.monthlyEmployeeBillList(month, id)
+            billService.monthlyEmployeeBillList(month, id, customCompanyDetails.getCompany())
         ));
     }
 
     /**
      * 월별 매장 상세 매출 조회 API
      * @param month 조회할 월
-     * @param id 매장 ID
+     * @param storeId 매장 ID
      * @return 매장 상세 매출 목록
      */
     @GetMapping("/month/store/detail")
-    public ResponseEntity<?> companyMonthStoreDetail(@RequestParam String month, String id) {
+    public ResponseEntity<?> companyMonthStoreDetail(@RequestParam String month, String storeId, @AuthenticationPrincipal CustomCompanyDetails companyDetails) {
         return ResponseEntity.ok(CommonResponseHelper.createResponse(
             "200", 
             "OK", 
             "SUCCESS", 
             "월별 매장 상세 매출 조회 성공", 
-            billService.monthlyStoreBillDetailList(month, id)
+            billService.monthlyStoreBillDetailList(month, storeId, companyDetails.getCompany())
         ));
     }
 
@@ -306,32 +303,31 @@ public class CompanyControllerV1 {
      * @return 매장별 월 매출 목록
      */
     @GetMapping("/month/store/total")
-    public ResponseEntity<?> companyMonthStoreTotal(@RequestParam String month,
-                                                    @AuthenticationPrincipal CustomCompanyDetails customCompanyDetails) {
+    public ResponseEntity<?> companyMonthStoreTotal(@RequestParam String month, @AuthenticationPrincipal CustomCompanyDetails customCompanyDetails) {
         return ResponseEntity.ok(CommonResponseHelper.createResponse(
             "200", 
             "OK", 
             "SUCCESS", 
             "월별 매장별 총 매출 조회 성공", 
-            billService.monthlyStoreBillTotalList(month)
+            billService.monthlyStoreBillTotalList(month, customCompanyDetails.getCompany())
         ));
     }
 
     /**
      * 일별 매장별 매출 합계 조회 API
-     * @param companyId 회사 ID
      * @param date 조회할 날짜
+     * @param customCompanyDetails 인증된 회사 정보
      * @return 매장별 일 매출 목록
      */
     @GetMapping("/company/day/store/sum")
-    public ResponseEntity<?> companyDayStoreEachSum(@RequestParam String companyId, String date) {
+    public ResponseEntity<?> companyDayStoreEachSum(@RequestParam String date, @AuthenticationPrincipal CustomCompanyDetails customCompanyDetails) {
         try {
             return ResponseEntity.ok(CommonResponseHelper.createResponse(
                 "200", 
                 "OK", 
                 "SUCCESS", 
                 "일별 매장별 매출 합계 조회 성공", 
-                closeSumService.companyDayStoreEachSum(date, companyId)
+                closeSumService.companyDayStoreEachSum(date, customCompanyDetails.getCompany())
             ));
         } catch (Exception e) {
             e.printStackTrace();
@@ -347,19 +343,19 @@ public class CompanyControllerV1 {
 
     /**
      * 월별 매장별 매출 합계 조회 API
-     * @param companyId 회사 ID
      * @param month 조회할 월
+     * @param customCompanyDetails 인증된 회사 정보
      * @return 매장별 월 매출 목록
      */
     @GetMapping("/company/month/store/sum")
-    public ResponseEntity<?> companyMonthStoreEachSum(@RequestParam String companyId, String month) {
+    public ResponseEntity<?> companyMonthStoreEachSum(@RequestParam String month, @AuthenticationPrincipal CustomCompanyDetails customCompanyDetails) {
         try {
             return ResponseEntity.ok(CommonResponseHelper.createResponse(
                 "200", 
                 "OK", 
                 "SUCCESS", 
                 "월별 매장별 매출 합계 조회 성공", 
-                closeSumService.companyMonthStoreEachSum(month, companyId)
+                closeSumService.companyMonthStoreEachSum(month, customCompanyDetails.getCompany())
             ));
         } catch (Exception e) {
             e.printStackTrace();
@@ -375,19 +371,19 @@ public class CompanyControllerV1 {
 
     /**
      * 월별 직원별 매출 합계 조회 API
-     * @param companyId 회사 ID
      * @param month 조회할 월
+     * @param customCompanyDetails 인증된 회사 정보
      * @return 직원별 월 매출 목록
      */
     @GetMapping("/company/month/member/sum")
-    public ResponseEntity<?> companyMonthMemberEachSum(@RequestParam String companyId, String month) {
+    public ResponseEntity<?> companyMonthMemberEachSum(@RequestParam String month, @AuthenticationPrincipal CustomCompanyDetails customCompanyDetails) {
         try {
             return ResponseEntity.ok(CommonResponseHelper.createResponse(
                 "200", 
                 "OK", 
                 "SUCCESS", 
                 "월별 직원별 매출 합계 조회 성공", 
-                closeSumService.companyMonthMemberEachSum(month, companyId)
+                closeSumService.companyMonthMemberEachSum(month, customCompanyDetails.getCompany())
             ));
         } catch (Exception e) {
             e.printStackTrace();
@@ -403,19 +399,19 @@ public class CompanyControllerV1 {
 
     /**
      * 연별 매장별 매출 합계 조회 API
-     * @param companyId 회사 ID
      * @param year 조회할 연도
+     * @param customCompanyDetails 인증된 회사 정보
      * @return 매장별 연 매출 목록
      */
     @GetMapping("/company/year/store/sum")
-    public ResponseEntity<?> companyYearStoreEachSum(@RequestParam String companyId, String year) {
+    public ResponseEntity<?> companyYearStoreEachSum(@RequestParam String year, @AuthenticationPrincipal CustomCompanyDetails customCompanyDetails) {
         try {
             return ResponseEntity.ok(CommonResponseHelper.createResponse(
                 "200", 
                 "OK", 
                 "SUCCESS", 
                 "연별 매장별 매출 합계 조회 성공", 
-                closeSumService.companyYearStoreEachSum(year, companyId)
+                closeSumService.companyYearStoreEachSum(year, customCompanyDetails.getCompany())
             ));
         } catch (Exception e) {
             e.printStackTrace();
@@ -431,19 +427,19 @@ public class CompanyControllerV1 {
 
     /**
      * 연별 직원별 매출 합계 조회 API
-     * @param companyId 회사 ID
      * @param year 조회할 연도
+     * @param customCompanyDetails 인증된 회사 정보
      * @return 직원별 연 매출 목록
      */
     @GetMapping("/company/year/member/sum")
-    public ResponseEntity<?> companyYearMemberEachSum(@RequestParam String companyId, String year) {
+    public ResponseEntity<?> companyYearMemberEachSum(@RequestParam String year, @AuthenticationPrincipal CustomCompanyDetails customCompanyDetails) {
         try {
             return ResponseEntity.ok(CommonResponseHelper.createResponse(
                 "200", 
                 "OK", 
                 "SUCCESS", 
                 "연별 직원별 매출 합계 조회 성공", 
-                closeSumService.companyYearMemberEachSum(year, companyId)
+                closeSumService.companyYearMemberEachSum(year, customCompanyDetails.getCompany())
             ));
         } catch (Exception e) {
             e.printStackTrace();

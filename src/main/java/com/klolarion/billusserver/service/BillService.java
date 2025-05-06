@@ -1,9 +1,6 @@
 package com.klolarion.billusserver.service;
 
-import com.klolarion.billusserver.domain.*;
-import com.klolarion.billusserver.domain.entity.Bill;
-import com.klolarion.billusserver.domain.entity.Member;
-import com.klolarion.billusserver.domain.entity.Store;
+import com.klolarion.billusserver.domain.entity.*;
 import com.klolarion.billusserver.dto.bill.BillRequestDto;
 import com.klolarion.billusserver.dto.bill.BillResponseDto;
 import com.klolarion.billusserver.exception.r400.BadRequestException;
@@ -18,6 +15,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -29,11 +27,7 @@ public class BillService {
     private final EntityManager em;
     private final QBill qBill = QBill.bill;
     private final QStore qStore = QStore.store;
-    private final QMember qMember = QMember.member;
-    private final QCompany qCompany = QCompany.company;
 
-    private String companyId;  // 현재 회사 ID
-    private String storeId;    // 현재 매장 ID
 
     /**
      * 직원이 새로운 장부를 생성합니다.
@@ -46,7 +40,7 @@ public class BillService {
      */
     public Bill newBill(BillRequestDto requestDto, Member member) {
         Store store = query.selectFrom(qStore)
-                .where(qStore.id.eq(requestDto.getStoreId()))
+                .where(qStore.id.eq(UUID.fromString(requestDto.getStoreId())))
                 .fetchOne();
         if (store == null) {
             throw new BadRequestException("매장 정보를 찾을 수 없습니다.");
@@ -101,10 +95,11 @@ public class BillService {
      * 매장별로 직원 이름과 매출 합계를 그룹화하여 반환합니다.
      * 
      * @param month 조회할 월 (YYYYMM 형식)
-     * @param id 매장 ID
+     * @param storeId 매장 ID
+     * @param company 현재 회사 객체
      * @return 매장별 월간 상세 장부 목록
      */
-    public List<BillResponseDto> monthlyStoreBillDetailList(String month, String id) {
+    public List<BillResponseDto> monthlyStoreBillDetailList(String month, String storeId, Company company) {
         Integer index = 0;
         List<BillResponseDto> result = new ArrayList<>();
 
@@ -113,9 +108,9 @@ public class BillService {
                         qBill.member.memberName,
                         qBill.store.price.sum()
                 ).from(qBill)
-                .where(qBill.company.id.eq(companyId)
+                .where(qBill.company.id.eq(company.getId())
                         .and(qBill.date.contains(month))
-                        .and(qBill.store.id.eq(id)))
+                        .and(qBill.store.id.eq(UUID.fromString(storeId))))
                 .groupBy(qBill.member.memberName)
                 .fetch();
 
@@ -124,13 +119,14 @@ public class BillService {
             String storeName = tuple.get(qBill.store.storeName);
             String total = tuple.get(qBill.store.price.sum()).toString();
             BillResponseDto tmp = BillResponseDto.builder()
-                    .index(index += 1)
+                    .index(++index)
                     .employeeName(memberName)
                     .storeName(storeName)
                     .companyName(null)
                     .price(total)
                     .date(month)
                     .count(null)
+                    .companyId(company.getId().toString())
                     .build();
             result.add(tmp);
         }
@@ -144,7 +140,7 @@ public class BillService {
      * @param month 조회할 월 (YYYYMM 형식)
      * @return 매장별 월간 매출 합계 목록
      */
-    public List<BillResponseDto> monthlyStoreBillTotalList(String month) {
+    public List<BillResponseDto> monthlyStoreBillTotalList(String month, Company company) {
         List<BillResponseDto> result = new ArrayList<>();
         Integer index = 0;
         Integer total = null;
@@ -153,7 +149,7 @@ public class BillService {
                         qBill.store.storeName,
                         qBill.store.price.sum()
                 ).from(qBill)
-                .where(qBill.company.id.eq(companyId)
+                .where(qBill.company.id.eq(company.getId())
                         .and(qBill.date.contains(month)))
                 .groupBy(qBill.store.storeName)
                 .fetch();
@@ -172,6 +168,7 @@ public class BillService {
                     .price(total != null ? total.toString() : "0")
                     .date(month)
                     .count(null)
+                    .companyId(company.getId().toString())
                     .build();
             result.add(tmp);
         }
@@ -183,17 +180,17 @@ public class BillService {
      * 직원별로 매장과 날짜별 매출 정보를 반환합니다.
      * 
      * @param month 조회할 월 (YYYYMM 형식)
-     * @param id 직원 ID
+     * @param memberId 직원 ID
      * @return 직원별 월간 장부 상세 목록
      */
-    public List<BillResponseDto> monthlyEmployeeBillList(String month, String id) {
+    public List<BillResponseDto> monthlyEmployeeBillList(String month, String memberId, Company company) {
         Integer index = 0;
         List<BillResponseDto> result = new ArrayList<>();
 
         List<Bill> list = query.selectFrom(qBill)
-                .where(qBill.company.id.eq(companyId)
+                .where(qBill.company.id.eq(company.getId())
                         .and(qBill.date.contains(month))
-                        .and(qBill.member.id.eq(id)))
+                        .and(qBill.member.id.eq(UUID.fromString(memberId))))
                 .fetch();
 
         for (Bill bill : list) {
@@ -202,13 +199,14 @@ public class BillService {
             String price = bill.getStore().getPrice().toString();
             String date = bill.getDate();
             BillResponseDto tmp = BillResponseDto.builder()
-                    .index(index += 1)
+                    .index(++index)
                     .employeeName(memberName)
                     .storeName(storeName)
                     .companyName(null)
                     .price(price)
                     .date(date)
                     .count(null)
+                    .companyId(company.getId().toString())
                     .build();
             result.add(tmp);
         }
@@ -222,7 +220,7 @@ public class BillService {
      * @param month 조회할 월 (YYYYMM 형식)
      * @return 직원별 월간 매출 합계 목록
      */
-    public List<BillResponseDto> monthlyEmployeeBillTotal(String month) {
+    public List<BillResponseDto> monthlyEmployeeBillTotal(String month, Company company) {
         List<BillResponseDto> result = new ArrayList<>();
         Integer index = 0;
         Integer total = null;
@@ -231,7 +229,7 @@ public class BillService {
                         qBill.member.memberName,
                         qBill.store.price.sum()
                 ).from(qBill)
-                .where(qBill.company.id.eq(companyId)
+                .where(qBill.company.id.eq(company.getId())
                         .and(qBill.date.contains(month)))
                 .groupBy(qBill.member.memberName)
                 .fetch();
@@ -250,6 +248,7 @@ public class BillService {
                     .price(total != null ? total.toString() : "0")
                     .date(month)
                     .count(null)
+                    .companyId(company.getId().toString())
                     .build();
             result.add(tmp);
         }
@@ -261,10 +260,10 @@ public class BillService {
      * 날짜별로 직원의 방문 횟수를 피벗 테이블 형태로 반환합니다.
      * 
      * @param month 조회할 월 (YYYYMM 형식)
-     * @param id 매장 ID
+     * @param storeId 매장 ID
      * @return 매장별 월간 직원 방문 현황 목록
      */
-    public List<Object[]> monthlyCompanyBillDetail(String month, String storeId) {
+    public List<Object[]> monthlyCompanyBillDetail(String month, String storeId, Company company) {
         //기준날짜 리스트
         List<String> dayList = new ArrayList<>();
         for (int i = 1; i < 32; i++) {
@@ -283,7 +282,7 @@ public class BillService {
                 sql += tmp;
             }
         }
-        sql += "from ( SELECT member_name, date, COUNT(*) AS row_count FROM bill WHERE store_id = '" + storeId + "' AND company_id = '" + companyId + "' AND date LIKE '" + month + "%' GROUP BY member_name, date) as subquery group by member_name;";
+        sql += "from ( SELECT member_name, date, COUNT(*) AS row_count FROM bill WHERE store_id = '" + storeId + "' AND company_id = '" + company.getId() + "' AND date LIKE '" + month + "%' GROUP BY member_name, date) as subquery group by member_name;";
 
         //쿼리 실행
         Query result = em.createNativeQuery(sql);
@@ -299,7 +298,7 @@ public class BillService {
      * @param month 조회할 월 (YYYYMM 형식)
      * @return 회사별 월간 매출 합계 목록
      */
-    public List<BillResponseDto> monthlyCompanyBillTotalList(String month) {
+    public List<BillResponseDto> monthlyCompanyBillTotalList(String month, Store store) {
         List<BillResponseDto> result = new ArrayList<>();
         Integer index = 0;
         Integer total = null;
@@ -309,26 +308,27 @@ public class BillService {
                         qBill.company.companyName,
                         qBill.store.price.sum()
                 ).from(qBill)
-                .where(qBill.store.id.eq(storeId)
+                .where(qBill.store.id.eq(store.getId())
                         .and(qBill.date.contains(month)))
                 .groupBy(qBill.company.companyName)
                 .fetch();
 
         for (Tuple tuple : list) {
-            String companyId = tuple.get(qBill.company.id);
+            String companyId = tuple.get(qBill.company.id).toString();
             String companyName = tuple.get(qBill.company.companyName);
             Integer sum = tuple.get(qBill.store.price.sum());
             if (sum != null) {
                 total = Integer.valueOf(sum);
             }
             BillResponseDto tmp = BillResponseDto.builder()
-                    .index(Integer.parseInt(companyId))
+                    .index(++index)
                     .employeeName(null)
                     .storeName(null)
                     .companyName(companyName)
                     .price(total != null ? total.toString() : "0")
                     .date(month)
                     .count(null)
+                    .companyId(companyId)
                     .build();
             result.add(tmp);
         }
@@ -342,7 +342,7 @@ public class BillService {
      * @param date 조회할 날짜 (YYYYMMDD 형식)
      * @return 회사별 일일 매출 합계 목록
      */
-    public List<BillResponseDto> dailyCompanyBillTotalList(String date) {
+    public List<BillResponseDto> dailyCompanyBillTotalList(String date, Store store) {
         List<BillResponseDto> result = new ArrayList<>();
         Integer index = 0;
         Integer total = null;
@@ -352,26 +352,27 @@ public class BillService {
                         qBill.company.companyName,
                         qBill.store.price.sum()
                 ).from(qBill)
-                .where(qBill.store.id.eq(storeId)
+                .where(qBill.store.id.eq(store.getId())
                         .and(qBill.date.contains(date)))
                 .groupBy(qBill.company.companyName)
                 .fetch();
 
         for (Tuple tuple : list) {
-            String companyId = tuple.get(qBill.company.id);
+            String companyId = tuple.get(qBill.company.id).toString();
             String companyName = tuple.get(qBill.company.companyName);
             Integer sum = tuple.get(qBill.store.price.sum());
             if (sum != null) {
                 total = Integer.valueOf(sum);
             }
             BillResponseDto tmp = BillResponseDto.builder()
-                    .index(Integer.parseInt(companyId))
+                    .index(++index)
                     .employeeName(null)
                     .storeName(null)
                     .companyName(companyName)
                     .price(total != null ? total.toString() : "0")
                     .date(date)
                     .count(null)
+                    .companyId(companyId)
                     .build();
             result.add(tmp);
         }
@@ -385,7 +386,7 @@ public class BillService {
      * @param month 조회할 월 (YYYYMM 형식)
      * @return 매장별 월간 회사 방문 현황 목록
      */
-    public List<Object[]> monthlyStoreBillDetail(String month) {
+    public List<Object[]> monthlyStoreBillDetail(String month, Store store) {
         //기준날짜 리스트
         List<String> dayList = new ArrayList<>();
         for (int i = 1; i < 32; i++) {
@@ -404,7 +405,7 @@ public class BillService {
                 sql += tmp;
             }
         }
-        sql += "from ( SELECT company_name, date, price, COUNT(*) AS row_count FROM bill WHERE store_id = '" + storeId + "' AND date LIKE '" + month + "%' GROUP BY company_name, date) as subquery group by company_name;";
+        sql += "from ( SELECT company_name, date, price, COUNT(*) AS row_count FROM bill WHERE store_id = '" + store.getId() + "' AND date LIKE '" + month + "%' GROUP BY company_name, date) as subquery group by company_name;";
 
         //쿼리 실행
         Query result = em.createNativeQuery(sql);

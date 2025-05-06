@@ -12,6 +12,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class BillResponseDto {
     private Integer index;
+    private String companyId;
     private String employeeName;
     private String storeName;
     private String companyName;

@@ -2,6 +2,8 @@ package com.klolarion.billusserver.service;
 
 import com.klolarion.billusserver.domain.*;
 import com.klolarion.billusserver.domain.entity.Member;
+import com.klolarion.billusserver.domain.entity.QApply;
+import com.klolarion.billusserver.domain.entity.QStore;
 import com.klolarion.billusserver.domain.entity.Store;
 import com.klolarion.billusserver.dto.*;
 import com.klolarion.billusserver.dto.member.MemberResponseDto;
@@ -13,6 +15,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 
@@ -31,7 +34,7 @@ public class MemberService {
     public MemberResponseDto memberInfo(Member member) {
         // 등록 신청한 회사가 있는지 조회
         boolean alreadyApplied = query.selectFrom(qApply)
-                .where(qApply.member.id.eq(member.getId().toString())
+                .where(qApply.member.id.eq(member.getId())
                         .and(qApply.isRejected.eq("F"))
                         .and(qApply.offCd.eq("F")))
                 .fetchFirst() != null;
@@ -94,7 +97,7 @@ public class MemberService {
         }
 
         Store store = query.selectFrom(qStore)
-                .where(qStore.id.eq(requestDto.getId()))
+                .where(qStore.id.eq(UUID.fromString(requestDto.getId())))
                 .fetchOne();
 
         if (store == null) {

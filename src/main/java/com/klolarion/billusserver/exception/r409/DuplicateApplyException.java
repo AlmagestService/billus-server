@@ -1,11 +1,10 @@
 package com.klolarion.billusserver.exception.r409;
 
-import com.klolarion.billusserver.exception.base.BaseException;
 import org.springframework.http.HttpStatus;
 
-public class DuplicateApplyException extends BaseException {
+public class DuplicateApplyException extends RuntimeException {
     public DuplicateApplyException(String message) {
-        super(HttpStatus.CONFLICT, BaseException.DUPLICATE_RESOURCE, message);
+        super(message);
     }
 
     public static DuplicateApplyException duplicate(String applyType) {

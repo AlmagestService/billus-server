@@ -40,3 +40,11 @@ out/
 
 # Firebase service account keys
 src/main/resources/firebase/*.json
+/src/main/generated/
+
+# QueryDSL Q클래스 자동 생성 경로
+/build/
+/build/generated/
+/build/generated-sources/
+/out/production/
+/out/test/
